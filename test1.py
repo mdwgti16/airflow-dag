@@ -18,7 +18,6 @@
 """
 This is an example dag for using a Kubernetes Executor Configuration.
 """
-import k8s as k8s
 import telegram
 
 try:
