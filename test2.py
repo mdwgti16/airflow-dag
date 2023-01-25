@@ -45,7 +45,7 @@ with DAG(dag_id='test2', schedule_interval='0 12 * * *', default_args=default_ar
     tasks = [PythonOperator(task_id='task_{0}'.format(t), python_callable=hello,
                             op_kwargs={'my_keyword': 'Airflow_{0}'.format(t)}) for t in range(1, 4)]
 
-    # task_4 = PythonOperator(task_id='task_4', python_callable=process, op_args=['my super parameter'])
+    task_4 = PythonOperator(task_id='task_4', python_callable=process, op_args=['my super parameter'])
     #
     # # task_4 = PythonOperator(task_id='task_4',
     # #                                 python_callable=hello,
@@ -57,4 +57,4 @@ with DAG(dag_id='test2', schedule_interval='0 12 * * *', default_args=default_ar
     #
     # task_6 = BashOperator(task_id='task_6', bash_command='sleep 5')
 
-    tasks
+    tasks >> task_4
