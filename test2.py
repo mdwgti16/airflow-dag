@@ -40,7 +40,7 @@ default_args = {
 #     return 'done'
 
 
-with DAG(dag_id='parallel_dag_test', schedule_interval='0 12 * * *', default_args=default_args, catchup=False) as dag:
+with DAG(dag_id='test2', schedule_interval='0 12 * * *', default_args=default_args, catchup=False) as dag:
     # Tasks dynamically generated
     tasks = [BashOperator(task_id='task_{0}'.format(t), bash_command='sleep 5'.format(t)) for t in range(1, 4)]
 
