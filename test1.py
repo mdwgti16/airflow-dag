@@ -71,7 +71,7 @@ try:
 
 
         t1 = PythonOperator(
-            task_id='bash_hello_world',
+            task_id='bash_hello_world1',
             executor_config={
                 # "pod_override": k8s.V1Pod(kind='v1',
                 #                           metadata=k8s.V1ObjectMeta(annotations={"test": "annotation"},
@@ -90,7 +90,7 @@ try:
         )
 
         t2 = PythonOperator(
-            task_id='bash_hello_world',
+            task_id='bash_hello_world2',
             executor_config={
                 # "pod_override": k8s.V1Pod(kind='v1',
                 #                           metadata=k8s.V1ObjectMeta(annotations={"test": "annotation"},
