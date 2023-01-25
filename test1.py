@@ -70,48 +70,42 @@ try:
             print('Hello from {kw}'.format(kw=kwargs['my_keyword']))
 
 
-        # t1 = PythonOperator(
-        #     task_id='bash_hello_world',
-        #     dag=dag,
-        #     bash_command='echo "Hello World"'
-        # )
-
         t1 = PythonOperator(
             task_id='bash_hello_world',
             executor_config={
                 # "pod_override": k8s.V1Pod(kind='v1',
                 #                           metadata=k8s.V1ObjectMeta(annotations={"test": "annotation"},
                 #                                                     name="bash_hello_world"),
-                                          # spec=k8s.V1PodSpec(
-                                          #     containers=k8s.V1Container(
-                                          #         name='dummy-test1',
-                                          #         image='mdwgti16/airflow-env:ndb-v2',
-                                          #                                image_pull_policy='IfNotPresent',
-                                          #                                ))
-                                          # )
+                # spec=k8s.V1PodSpec(
+                #     containers=k8s.V1Container(
+                #         name='dummy-test1',
+                #         image='mdwgti16/airflow-env:ndb-v2',
+                #                                image_pull_policy='IfNotPresent',
+                #                                ))
+                # )
             },
             dag=dag,
             python_callable=hello,
             op_kwargs={'my_keyword': 'Airflow'}
         )
 
-        t2 = BashOperator(
-            task_id='bash_hello_world_and_sleep',
-            executor_config={
-                # "pod_override": k8s.V1Pod(kind='v1',
-                #                           metadata=k8s.V1ObjectMeta(annotations={"test": "annotation"},
-                #                                                     name="bash_hello_world_and_sleep"),
-                                          # spec=k8s.V1PodSpec(
-                                          #     containers=k8s.V1Container(
-                                          #         name='dummy-test1',
-                                          #         image='mdwgti16/airflow-env:ndb-v2',
-                                          #                                image_pull_policy='IfNotPresent',
-                                          #                                ))
-                                          # )
-            },
-            dag=dag,
-            bash_command='sh -c echo Hello Kubernetes! && sleep 30'
-        )
+        # t2 = BashOperator(
+        #     task_id='bash_hello_world_and_sleep',
+        #     executor_config={
+        #         # "pod_override": k8s.V1Pod(kind='v1',
+        #         #                           metadata=k8s.V1ObjectMeta(annotations={"test": "annotation"},
+        #         #                                                     name="bash_hello_world_and_sleep"),
+        #                                   # spec=k8s.V1PodSpec(
+        #                                   #     containers=k8s.V1Container(
+        #                                   #         name='dummy-test1',
+        #                                   #         image='mdwgti16/airflow-env:ndb-v2',
+        #                                   #                                image_pull_policy='IfNotPresent',
+        #                                   #                                ))
+        #                                   # )
+        #     },
+        #     dag=dag,
+        #     bash_command='sh -c echo Hello Kubernetes! && sleep 30'
+        # )
 
         # t2 = PythonOperator(
         #     task_id='python_hello',
@@ -298,14 +292,15 @@ try:
         #
         # four_task = task_with_resource_limits()
 
-        (
-            # t1 >> t2
-                t2 >> t1
-            # start_task()
-            # >> [volume_task, other_ns_task, sidecar_task]
-            # >> third_task
-            # >> [base_image_task, four_task]
-        )
+        t1 >> t1
+
+        # (
+        #     # t1 >> t2
+        #     # start_task()
+        #     # >> [volume_task, other_ns_task, sidecar_task]
+        #     # >> third_task
+        #     # >> [base_image_task, four_task]
+        # )
 except Exception as e:
     bot = telegram.Bot(token='5374963190:AAF5tIr3I3UGjzqwainq9B-UHsv-szscVvY')
     bot.sendMessage(chat_id='-712874164', text=f"error, {e}")
