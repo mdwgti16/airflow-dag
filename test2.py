@@ -2,7 +2,6 @@ from datetime import datetime
 
 import telegram
 from airflow import DAG
-from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 
 dag = DAG('hello_world', description='Hello World DAG',
