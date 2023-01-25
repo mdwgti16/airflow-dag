@@ -1,6 +1,6 @@
 from datetime import datetime
 
-import telegram
+# import telegram
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
@@ -10,10 +10,10 @@ dag = DAG('hello_world', description='Hello World DAG',
           start_date=datetime(2017, 3, 20), catchup=False)
 
 
-def hello(**kwargs):
-    bot = telegram.Bot(token='5374963190:AAF5tIr3I3UGjzqwainq9B-UHsv-szscVvY')
-    bot.sendMessage(chat_id='-712874164', text="start")
-    print('Hello from {kw}'.format(kw=kwargs['my_keyword']))
+# def hello(**kwargs):
+#     bot = telegram.Bot(token='5374963190:AAF5tIr3I3UGjzqwainq9B-UHsv-szscVvY')
+#     bot.sendMessage(chat_id='-712874164', text="start")
+#     print('Hello from {kw}'.format(kw=kwargs['my_keyword']))
 
 
 # with DAG('hello_world', description='Hello World DAG',
@@ -35,20 +35,22 @@ default_args = {
 }
 
 
-# def process(p1):
-#     print(p1)
-#     return 'done'
+def process(p1):
+    print(p1)
+    return 'done'
 
 
 with DAG(dag_id='test2', schedule_interval='0 12 * * *', default_args=default_args, catchup=False) as dag:
     # Tasks dynamically generated
-    tasks = [BashOperator(task_id='task_{0}'.format(t), bash_command='sleep 5'.format(t)) for t in range(1, 4)]
+    tasks = [BashOperator(task_id='task_{0}'.format(t), bash_command='sleep 600'.format(t)) for t in range(1, 4)]
 
-    task_4 = PythonOperator(task_id='task_4',
-                                    python_callable=hello,
-                                    dag=dag,
-                                    op_kwargs={'my_keyword': 'Airflow'}
-                                    )
+    task_4 = PythonOperator(task_id='task_4', python_callable=process, op_args=['my super parameter'])
+
+    # task_4 = PythonOperator(task_id='task_4',
+    #                                 python_callable=hello,
+    #                                 dag=dag,
+    #                                 op_kwargs={'my_keyword': 'Airflow'}
+    #                                 )
 
     task_5 = BashOperator(task_id='task_5', bash_command='echo "pipeline done"')
 
