@@ -89,6 +89,25 @@ try:
             op_kwargs={'my_keyword': 'Airflow'}
         )
 
+        t2 = PythonOperator(
+            task_id='bash_hello_world',
+            executor_config={
+                # "pod_override": k8s.V1Pod(kind='v1',
+                #                           metadata=k8s.V1ObjectMeta(annotations={"test": "annotation"},
+                #                                                     name="bash_hello_world"),
+                # spec=k8s.V1PodSpec(
+                #     containers=k8s.V1Container(
+                #         name='dummy-test1',
+                #         image='mdwgti16/airflow-env:ndb-v2',
+                #                                image_pull_policy='IfNotPresent',
+                #                                ))
+                # )
+            },
+            dag=dag,
+            python_callable=hello,
+            op_kwargs={'my_keyword': 'Airflow'}
+        )
+
         # t2 = BashOperator(
         #     task_id='bash_hello_world_and_sleep',
         #     executor_config={
@@ -292,7 +311,7 @@ try:
         #
         # four_task = task_with_resource_limits()
 
-        t1 >> t1
+        t1 >> t2
 
         # (
         #     # t1 >> t2
