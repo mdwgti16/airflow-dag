@@ -14,10 +14,12 @@ default_args = {
     'owner': 'Airflow',
 }
 
+from time import sleep
 
 def process(p1):
     print(p1)
     print(pd.read_csv('/opt/airflow/files/test.txt'))
+    sleep(600)
     return 'done'
 
 
