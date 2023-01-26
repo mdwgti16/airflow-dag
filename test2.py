@@ -40,7 +40,7 @@ def process(p1):
     return 'done'
 
 
-with DAG(dag_id='test2', schedule_interval='0 12 * * *', default_args=default_args, catchup=False) as dag:
+with DAG(dag_id='test2', schedule_interval='0 13 * * *', default_args=default_args, catchup=False) as dag:
     # Tasks dynamically generated
     tasks = [PythonOperator(task_id='task_{0}'.format(t), python_callable=hello,
                             op_kwargs={'my_keyword': 'Airflow_{0}'.format(t)}) for t in range(1, 4)]
