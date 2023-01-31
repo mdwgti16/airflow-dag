@@ -23,7 +23,7 @@ def process(p1):
     return 'done'
 
 
-with DAG(dag_id='test3', schedule_interval='0 19 * * *', default_args=default_args, catchup=False) as dag:
+with DAG(dag_id='test3', schedule_interval='0 20 * * *', default_args=default_args, catchup=False) as dag:
     task_4 = PythonOperator(task_id='task_4', python_callable=process, op_args=['my super parameter'])
 
     task_4
