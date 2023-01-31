@@ -19,7 +19,7 @@ from time import sleep
 def process(p1):
     print(p1)
     print(pd.read_csv('/opt/airflow/files/test.txt'))
-    sleep(600)
+    sleep(60*60*5)
     return 'done'
 
 
