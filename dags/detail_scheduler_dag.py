@@ -1,4 +1,5 @@
 import subprocess
+from time import sleep
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
@@ -19,6 +20,12 @@ def process(p1):
     return 'done'
 
 
+def process2(p1):
+    print(p1)
+    sleep(60*60*5)
+    return 'done'
+
 with DAG(dag_id='detail_scheduler', schedule_interval='0 0 * * *', default_args=default_args, catchup=False) as dag:
     detail = PythonOperator(task_id='detail', python_callable=process, op_args=['my super parameter'])
-    detail
+    wait = PythonOperator(task_id='wait', python_callable=process, op_args=['my super parameter'])
+    detail >> wait
