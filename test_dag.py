@@ -20,9 +20,9 @@ with DAG(dag_id='parallel_dag_test', schedule_interval='0 0 * * *', default_args
 
     # task_4 = PythonOperator(task_id='task_4', python_callable=process, op_args=['my super parameter'])
 
-    task_5 = BashOperator(task_id='task_5', bash_command='echo "pipeline done"')
+    task_bash = BashOperator(task_id='task_bash', bash_command='echo "pipeline done"')
 
     # task_6 = BashOperator(task_id='task_6', bash_command='sleep 60')
 
     # tasks >> task_4 >> task_5 >> task_6
-    tasks >> task_5
+    tasks >> task_bash
