@@ -16,12 +16,13 @@ def process(p1):
 with DAG(dag_id='parallel_dag_test', schedule_interval='0 0 * * *', default_args=default_args, catchup=False) as dag:
 
     # Tasks dynamically generated
-    tasks = [BashOperator(task_id='task_{0}'.format(t), bash_command='sleep 60'.format(t)) for t in range(1, 4)]
+    tasks = [BashOperator(task_id='task_{0}'.format(t), bash_command='sleep 10'.format(t)) for t in range(1, 20)]
 
-    task_4 = PythonOperator(task_id='task_4', python_callable=process, op_args=['my super parameter'])
+    # task_4 = PythonOperator(task_id='task_4', python_callable=process, op_args=['my super parameter'])
 
     task_5 = BashOperator(task_id='task_5', bash_command='echo "pipeline done"')
 
-    task_6 = BashOperator(task_id='task_6', bash_command='sleep 60')
+    # task_6 = BashOperator(task_id='task_6', bash_command='sleep 60')
 
-    tasks >> task_4 >> task_5 >> task_6
+    # tasks >> task_4 >> task_5 >> task_6
+    tasks >> task_5
