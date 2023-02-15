@@ -15,7 +15,8 @@ default_args = {
 
 def process(p1):
     # cmd = 'java -DSpring.batch.job.names=DetailJob -Dacq.collectSite=lg.dns-shop.ru -Dmongodb.url=mongodb://acq:acq12345@10.98.192.100:27017/acq.acqlog?authSource=acq -Dmariadb.admin.url=jdbc:mariadb://10.103.220.109:3306/acq -jar /opt/airflow/files/application-0.0.1-SNAPSHOT.jar'
-    cmd = 'java -DSpring.batch.job.names=DetailJob -Dacq.collectSite=top.naverstore.com -Dmongodb.url=mongodb://acq:acq12345@10.98.30.157:27017/acq.acqlog?authSource=acq -Dmariadb.admin.url=jdbc:mariadb://10.103.220.109:3306/acq -jar /opt/nfs/files/application-0.0.1-SNAPSHOT.jar'
+    # cmd = 'java -DSpring.batch.job.names=DetailJob -Dacq.collectSite=top.naverstore.com -Dmongodb.url=mongodb://acq:acq12345@10.98.30.157:27017/acq.acqlog?authSource=acq -Dmariadb.admin.url=jdbc:mariadb://10.103.220.109:3306/acq -jar /opt/nfs/files/application-0.0.1-SNAPSHOT.jar'
+    cmd = 'java -DSpring.batch.job.names=DetailJob -Dacq.collectSite=lg.datart.cz -Dmongodb.url=mongodb://acq:acq12345@10.98.30.157:27017/acq.acqlog?authSource=acq -Dmariadb.admin.url=jdbc:mariadb://10.103.220.109:3306/acq -jar /opt/nfs/files/application-0.0.1-SNAPSHOT.jar'
     print(cmd)
     subprocess.run(cmd.split(' '))
 
