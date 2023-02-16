@@ -25,4 +25,5 @@ def process(p1):
 with DAG(dag_id='detail_scheduler', schedule_interval='0 1 * * *', default_args=default_args, catchup=False) as dag:
 
     detail = PythonOperator(task_id='detail', python_callable=process, op_args=['my super parameter'])
+
     detail
