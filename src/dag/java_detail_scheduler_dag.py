@@ -7,7 +7,6 @@ from airflow.operators.bash import BashOperator
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 
-from __init__ import *
 from src.common.db.mariadb import *
 
 ENV = 'JAVA'
