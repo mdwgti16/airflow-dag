@@ -24,12 +24,6 @@ def process(p1):
     return 'done'
 
 
-# with DAG(dag_id='detail_scheduler', schedule_interval='0 1 * * *', default_args=default_args, catchup=False) as dag:
-#
-#     detail = PythonOperator(task_id='detail', python_callable=process, op_args=['my super parameter'])
-#
-#     detail
-
 def get_cron_interval(interval):
     cron = Cron(interval)
     schedule = cron.schedule(start_date=datetime.now())
@@ -62,6 +56,24 @@ def hello_world_py(dag_id):
     print("This is DAG: {}".format(str(dag_id)))
 
 
+def create_task(r):
+    collect_site = r.COLLECT_SITE
+
+    return BashOperator(
+        task_id=f"{collect_site}__{get_cron_interval(r['SCHEDULE_INTERVAL'])}",
+        bash_command=f"""
+            java -DSpring.batch.job.names=DetailJob 
+                 -Dacq.collectSite={collect_site} 
+                 -Dacq.subSite={r.SUB_SITE}
+                 -Dacq.type={r.TYPE}
+                 -Dmongodb.url=mongodb://acq:acq12345@10.98.30.157:27017/acq.acqlog?authSource=acq 
+                 -Dmariadb.admin.url=jdbc:mariadb://10.103.220.109:3306/acq 
+                 -jar 
+                 /opt/nfs/files/application-0.0.1-SNAPSHOT.jar
+        """
+    )
+
+
 def create_dag(dag_id, interval, default_args):
     dag = DAG(dag_id=dag_id,
               schedule_interval=interval,
@@ -70,14 +82,15 @@ def create_dag(dag_id, interval, default_args):
               # max_active_runs=1,
               on_failure_callback=airflow_failed_callback)
 
-    with dag:
-        t1 = PythonOperator(task_id="hello_world",
-                            python_callable=hello_world_py,
-                            op_kwargs={'dag_id': dag_id})
-    return dag
+    acq_tasks = acq_detail_task(interval)
+
+    if acq_tasks is not None and len(acq_tasks) > 0:
+        with dag:
+            tasks = acq_tasks.apply(create_task, axis=1).tolist()
+        return dag
 
 
-for interval in acq_interval():
+for interval in acq_detail_interval():
     dag_name = 'ACQ_DETAIL_SCHEDULER'
     dag_id = f'{dag_name}_{str(get_cron_interval(interval))}'
     default_args = {
@@ -87,4 +100,6 @@ for interval in acq_interval():
         'owner': 'Airflow',
     }
 
-    globals()[dag_id] = create_dag(dag_id, interval, default_args)
+    dags = create_dag(dag_id, interval, default_args)
+    if dags:
+        globals()[dag_id] = dags
