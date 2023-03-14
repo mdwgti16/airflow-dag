@@ -5,7 +5,7 @@ from sys import platform
 
 def acq_engine():
     if platform == "linux" or platform == "linux2":
-        return create_engine(f'mariadb+pymysql://acq:acq12345@10.103.220.109:3306/acq', pool_recycle=3600)
+        return create_engine(f'mariadb+pymysql://acq:acq00!q@10.103.220.109:3306/acq', pool_recycle=3600)
     else:
         return create_engine(f'mariadb+pymysql://acq:acq00!q@103.218.158.204:3306/acq', pool_recycle=3600)
 
