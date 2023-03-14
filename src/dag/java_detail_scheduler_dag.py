@@ -1,31 +1,20 @@
 import subprocess
 from cron_converter import Cron
-from datetime import datetime
-
-from time import sleep
+from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 
-from datetime import datetime, timedelta
-
+from __init__ import *
 from src.common.db.mariadb import *
 
-
-def process(p1):
-    # cmd = 'java -DSpring.batch.job.names=DetailJob -Dacq.collectSite=lg.dns-shop.ru -Dmongodb.url=mongodb://acq:acq12345@10.98.192.100:27017/acq.acqlog?authSource=acq -Dmariadb.admin.url=jdbc:mariadb://10.103.220.109:3306/acq -jar /opt/airflow/files/application-0.0.1-SNAPSHOT.jar'
-    # cmd = 'java -DSpring.batch.job.names=DetailJob -Dacq.collectSite=top.naverstore.com -Dmongodb.url=mongodb://acq:acq12345@10.98.30.157:27017/acq.acqlog?authSource=acq -Dmariadb.admin.url=jdbc:mariadb://10.103.220.109:3306/acq -jar /opt/nfs/files/application-0.0.1-SNAPSHOT.jar'
-    cmd = 'java -DSpring.batch.job.names=DetailJob -Dacq.collectSite=lg.datart.cz -Dmongodb.url=mongodb://acq:acq12345@10.98.30.157:27017/acq.acqlog?authSource=acq -Dmariadb.admin.url=jdbc:mariadb://10.103.220.109:3306/acq -jar /opt/nfs/files/application-0.0.1-SNAPSHOT.jar'
-    print(cmd)
-    subprocess.run(cmd.split(' '))
-
-    return 'done'
+ENV = 'JAVA'
 
 
-def get_cron_interval(interval):
-    cron = Cron(interval)
+def get_cron_interval(schedule_interval):
+    cron = Cron(schedule_interval)
     schedule = cron.schedule(start_date=datetime.now())
     n1 = schedule.next()
     n2 = schedule.next()
@@ -50,10 +39,6 @@ def airflow_failed_callback(context):
         log_url=context.get('task_instance').log_url
     )
     print('Airflow', message)
-
-
-def hello_world_py(dag_id):
-    print("This is DAG: {}".format(str(dag_id)))
 
 
 def create_task(r):
@@ -83,7 +68,7 @@ def create_dag(dag_id, interval, default_args):
               # max_active_runs=1,
               on_failure_callback=airflow_failed_callback)
 
-    acq_tasks = acq_detail_task(interval)
+    acq_tasks = acq_detail_task(ENV, interval)
 
     if acq_tasks is not None and len(acq_tasks) > 0:
         with dag:
@@ -96,8 +81,8 @@ def create_dag(dag_id, interval, default_args):
         return dag
 
 
-for interval in acq_detail_interval():
-    dag_name = 'ACQ_DETAIL_SCHEDULER'
+for interval in acq_detail_interval(ENV):
+    dag_name = 'ACQ_JAVA_DETAIL_SCHEDULER'
     dag_id = f'{dag_name}_{str(get_cron_interval(interval))}'
     default_args = {
         # 'retries': 3,
