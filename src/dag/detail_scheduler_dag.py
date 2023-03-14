@@ -87,7 +87,12 @@ def create_dag(dag_id, interval, default_args):
 
     if acq_tasks is not None and len(acq_tasks) > 0:
         with dag:
+            start = EmptyOperator(task_id="detail_start")
             tasks = acq_tasks.apply(create_task, axis=1).tolist()
+            end = EmptyOperator(task_id="detail_end")
+
+            start >> tasks >> end
+
         return dag
 
 
