@@ -36,7 +36,7 @@ def get_cron_interval(interval):
     n1 = schedule.next()
     n2 = schedule.next()
 
-    int((n2 - n1).total_seconds() / 60)
+    return int((n2 - n1).total_seconds() / 60)
 
 
 def airflow_failed_callback(context):
