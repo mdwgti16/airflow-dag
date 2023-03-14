@@ -48,7 +48,7 @@ def create_task(r):
     return BashOperator(
         task_id=f"{collect_site}__{sub_site}__{get_cron_interval(r['SCHEDULE_INTERVAL'])}",
         bash_command=f"""
-            java -DSpring.batch.job.names=DetailJob 
+            java -DSpring.batch.job.names=JavaDetailJob 
                  -Dacq.collectSite={collect_site} 
                  -Dacq.subSite={sub_site}
                  -Dacq.type={r.TYPE}
