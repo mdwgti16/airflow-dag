@@ -58,13 +58,14 @@ def hello_world_py(dag_id):
 
 def create_task(r):
     collect_site = r.COLLECT_SITE
+    sub_site = r.SUB_SITE
 
     return BashOperator(
-        task_id=f"{collect_site}__{get_cron_interval(r['SCHEDULE_INTERVAL'])}",
+        task_id=f"{collect_site}__{sub_site}__{get_cron_interval(r['SCHEDULE_INTERVAL'])}",
         bash_command=f"""
             java -DSpring.batch.job.names=DetailJob 
                  -Dacq.collectSite={collect_site} 
-                 -Dacq.subSite={r.SUB_SITE}
+                 -Dacq.subSite={sub_site}
                  -Dacq.type={r.TYPE}
                  -Dmongodb.url=mongodb://acq:acq12345@10.98.30.157:27017/acq.acqlog?authSource=acq 
                  -Dmariadb.admin.url=jdbc:mariadb://10.103.220.109:3306/acq 
