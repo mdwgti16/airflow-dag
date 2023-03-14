@@ -1,4 +1,7 @@
 import subprocess
+from cron_converter import Cron
+from datetime import datetime
+
 from time import sleep
 
 from airflow import DAG
@@ -26,6 +29,15 @@ def process(p1):
 #     detail = PythonOperator(task_id='detail', python_callable=process, op_args=['my super parameter'])
 #
 #     detail
+
+def get_cron_interval(interval):
+    cron = Cron(interval)
+    schedule = cron.schedule(start_date=datetime.now())
+    n1 = schedule.next()
+    n2 = schedule.next()
+
+    int((n2 - n1).total_seconds() / 60)
+
 
 def airflow_failed_callback(context):
     # message 작성
@@ -67,7 +79,7 @@ def create_dag(dag_id, interval, default_args):
 
 for interval in acq_interval():
     dag_name = 'ACQ_DETAIL_SCHEDULER'
-    dag_id = f'{dag_name}_{"_".join(interval)}'
+    dag_id = f'{dag_name}_{str(get_cron_interval(interval))}'
     default_args = {
         # 'retries': 3,
         # 'retry_delay': timedelta(minutes=5),
