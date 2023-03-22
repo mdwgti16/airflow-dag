@@ -26,7 +26,7 @@ def create_dag(dag_id, interval, default_args):
         with dag:
             start = EmptyOperator(task_id="java_detail_start")
             tasks = acq_tasks.apply(create_task, job_names="JavaDetailJob", start_time=start_time, end_time=end_time,
-                                    axis=1).tolist()
+                                    log_file_prefix=dag_id + '_', axis=1).tolist()
             end = EmptyOperator(task_id="detail_end")
 
             start >> tasks >> end

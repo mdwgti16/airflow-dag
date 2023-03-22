@@ -47,11 +47,11 @@ def get_cron_time_period_with_format(schedule_interval):
     return start_time.strftime(fmt), end_time.strftime(fmt)
 
 
-def create_task(r, job_names, start_time, end_time):
+def create_task(r, job_names, start_time, end_time, log_file_prefix):
     collect_site = r.COLLECT_SITE
     sub_site = r.SUB_SITE
 
     return BashOperator(
         task_id=f"{collect_site}__{sub_site}__{get_cron_interval(r['SCHEDULE_INTERVAL'])}",
-        bash_command=f"java -DSpring.batch.job.names={job_names} -Dacq.collectSite={collect_site} -Dacq.subSite={sub_site} -Dacq.type={r.TYPE} -Dmongodb.url=mongodb://acq:acq12345@10.98.30.157:27017/acq.acqlog?authSource=acq -Dmariadb.admin.url=jdbc:mariadb://10.103.220.109:3306/acq -jar /opt/nfs/files/application-0.0.1-SNAPSHOT.jar {start_time} {end_time}"
+        bash_command=f"java -DSpring.batch.job.names={job_names} -Dacq.collectSite={collect_site} -Dacq.subSite={sub_site} -Dacq.type={r.TYPE} -Dmongodb.url=mongodb://acq:acq12345@10.98.30.157:27017/acq.acqlog?authSource=acq -Dmariadb.admin.url=jdbc:mariadb://10.103.220.109:3306/acq -DlogFilePrefix={log_file_prefix} -jar /opt/nfs/files/application-0.0.1-SNAPSHOT.jar {start_time} {end_time}"
     )
