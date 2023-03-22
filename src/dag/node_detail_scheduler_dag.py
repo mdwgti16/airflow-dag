@@ -24,10 +24,10 @@ def create_dag(dag_id, interval, default_args):
     acq_tasks = acq_detail_task(ENV, interval)
 
     if acq_tasks is not None and len(acq_tasks) > 0:
-        stat_time, end_time = get_cron_time_period_with_format(interval)
+        start_time, end_time = get_cron_time_period_with_format(interval)
         with dag:
             start = EmptyOperator(task_id="node_detail_start")
-            tasks = acq_tasks.apply(create_task, job_names='NodeDetailJob', stat_time=stat_time, end_time=end_time,
+            tasks = acq_tasks.apply(create_task, job_names='NodeDetailJob', start_time=start_time, end_time=end_time,
                                     axis=1).tolist()
             end = EmptyOperator(task_id="detail_end")
 
