@@ -27,7 +27,7 @@ def create_dag(dag_id, interval, default_args):
             start = EmptyOperator(task_id="java_detail_start")
             tasks = acq_tasks.apply(create_task, job_names="JavaDetailJob", start_time=start_time, end_time=end_time,
                                     log_file_prefix=dag_id + '_',
-                                    api_path='-Dacq.node.detailApiUrl=http://10.109.170.130:8013/acq/java/detail',
+                                    api_path='-Dacq.node.detailApiUrl=http://10.109.170.130:8003/acq/java/detail',
                                     axis=1).tolist()
             end = EmptyOperator(task_id="detail_end")
 
