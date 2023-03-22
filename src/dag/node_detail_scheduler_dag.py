@@ -8,55 +8,9 @@ from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 
 from src.common.db.mariadb import *
+from src.dag.scheduler_util import *
 
 ENV = 'NODE'
-
-
-def get_cron_interval(schedule_interval):
-    cron = Cron(schedule_interval)
-    schedule = cron.schedule(start_date=datetime.now())
-    n1 = schedule.next()
-    n2 = schedule.next()
-
-    return int((n2 - n1).total_seconds() / 60)
-
-
-def airflow_failed_callback(context):
-    # message 작성
-    message = """
-            :red_circle: Task Failed.
-            *Dag*: {dag}
-            *Task*: {task}
-            *Execution Time*: {exec_date}
-            *Exception*: {exception}
-            *Log Url*: {log_url}
-            """.format(
-        dag=context.get('task_instance').dag_id,
-        task=context.get('task_instance').task_id,
-        exec_date=context.get('execution_time'),
-        exception=context.get('exception'),
-        log_url=context.get('task_instance').log_url
-    )
-    print('Airflow', message)
-
-
-def create_task(r):
-    collect_site = r.COLLECT_SITE
-    sub_site = r.SUB_SITE
-
-    return BashOperator(
-        task_id=f"{collect_site}__{sub_site}__{get_cron_interval(r['SCHEDULE_INTERVAL'])}",
-        bash_command=f"""
-            java -DSpring.batch.job.names=NodeDetailJob 
-                 -Dacq.collectSite={collect_site} 
-                 -Dacq.subSite={sub_site}
-                 -Dacq.type={r.TYPE}
-                 -Dmongodb.url=mongodb://acq:acq12345@10.98.30.157:27017/acq.acqlog?authSource=acq 
-                 -Dmariadb.admin.url=jdbc:mariadb://10.103.220.109:3306/acq 
-                 -jar 
-                 /opt/nfs/files/application-0.0.1-SNAPSHOT.jar
-        """
-    )
 
 
 def create_dag(dag_id, interval, default_args):
@@ -70,9 +24,11 @@ def create_dag(dag_id, interval, default_args):
     acq_tasks = acq_detail_task(ENV, interval)
 
     if acq_tasks is not None and len(acq_tasks) > 0:
+        stat_time, end_time = get_cron_time_period_with_format(interval)
         with dag:
-            start = EmptyOperator(task_id="detail_start")
-            tasks = acq_tasks.apply(create_task, axis=1).tolist()
+            start = EmptyOperator(task_id="node_detail_start")
+            tasks = acq_tasks.apply(create_task, job_names='NodeDetailJob', stat_time=stat_time, end_time=end_time,
+                                    axis=1).tolist()
             end = EmptyOperator(task_id="detail_end")
 
             start >> tasks >> end
