@@ -11,4 +11,6 @@ RUN echo "deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION
 RUN apt-get update
 RUN apt-get install -y temurin-11-jdk
 
+RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+
 USER airflow
